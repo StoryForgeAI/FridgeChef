@@ -3,36 +3,33 @@ import { useState, useRef, useEffect } from 'react';
 import { createBrowserClient } from '@/lib/supabase';
 import type { PantryItem } from '@/lib/types';
 
-type Html5QrcodeType = any;
-
 export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) => void }) {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState('');
-  const [Html5Qrcode, setHtml5Qrcode] = useState<(() => Html5QrcodeType) | null>(null);
-  const scannerRef = useRef<Html5QrcodeType | null>(null);
+  const scannerRef = useRef<any>(null);
   const supabase = createBrowserClient();
 
   useEffect(() => {
-    import('html5-qrcode').then((mod) => setHtml5Qrcode(() => mod.Html5Qrcode));
-  }, []);
-
-  useEffect(() => {
-    if (scanning && Html5Qrcode && !scannerRef.current) {
-      scannerRef.current = new Html5Qrcode('reader');
-      scannerRef.current.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText: string) => {
-          handleScan(decodedText);
-          scannerRef.current?.stop();
-        },
-        () => {}
-      );
+    if (scanning) {
+      import('html5-qrcode').then((mod) => {
+        const Html5Qrcode = mod.Html5Qrcode;
+        scannerRef.current = new Html5Qrcode('reader');
+        scannerRef.current.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: { width: 250, height: 250 } },
+          (decodedText: string) => {
+            handleScan(decodedText);
+          },
+          () => {}
+        );
+      });
     }
     return () => {
-      scannerRef.current?.stop().then(() => scannerRef.current?.clear());
+      if (scannerRef.current) {
+        scannerRef.current.stop().then(() => scannerRef.current?.clear());
+      }
     };
-  }, [scanning, Html5Qrcode]);
+  }, [scanning]);
 
   const handleScan = async (barcode: string) => {
     if (!barcode) return;
@@ -65,7 +62,9 @@ export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) =>
           <button
             onClick={() => {
               setScanning(false);
-              scannerRef.current?.stop().then(() => scannerRef.current?.clear());
+              if (scannerRef.current) {
+                scannerRef.current.stop().then(() => scannerRef.current?.clear());
+              }
             }}
             className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full text-sm z-10"
           >
