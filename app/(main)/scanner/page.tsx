@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createBrowserClient } from '@/lib/supabase';
 import BarcodeScanner from '@/components/ui/BarcodeScanner';
 import type { PantryItem } from '@/lib/types';
