@@ -16,7 +16,7 @@
     "@supabase/supabase-js": "^2.31.0",
     "stripe": "^14.14.0",
     "openai": "^4.14.2",
-    "react-html5-qrcode": "^1.1.0",
+    "html5-qrcode": "^2.3.8",
     "tailwindcss": "^3.4.0",
     "autoprefixer": "^10.4.0",
     "postcss": "^8.4.0"

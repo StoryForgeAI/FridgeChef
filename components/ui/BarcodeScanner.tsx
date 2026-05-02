@@ -1,13 +1,32 @@
 'use client';
-import { useState } from 'react';
-import { Html5QrcodePlugin } from 'react-html5-qrcode';
+import { useState, useRef, useEffect } from 'react';
+import { Html5Qrcode } from 'html5-qrcode';
 import { createBrowserClient } from '@/lib/supabase';
 import type { PantryItem } from '@/lib/types';
 
 export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) => void }) {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState('');
+  const scannerRef = useRef<Html5Qrcode | null>(null);
   const supabase = createBrowserClient();
+
+  useEffect(() => {
+    if (scanning && !scannerRef.current) {
+      scannerRef.current = new Html5Qrcode('reader');
+      scannerRef.current.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        (decodedText) => {
+          handleScan(decodedText);
+          scannerRef.current?.stop();
+        },
+        () => {}
+      );
+    }
+    return () => {
+      scannerRef.current?.stop().then(() => scannerRef.current?.clear());
+    };
+  }, [scanning]);
 
   const handleScan = async (barcode: string) => {
     if (!barcode) return;
@@ -36,13 +55,12 @@ export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) =>
     <div>
       {scanning ? (
         <div className="relative">
-          <Html5QrcodePlugin
-            config={{ fps: 10, qrbox: { width: 250, height: 250 } }}
-            onScanSuccess={(decodedText: string) => handleScan(decodedText)}
-            onScanError={() => {}}
-          />
+          <div id="reader" className="w-full h-64 bg-gray-100 rounded-lg" />
           <button
-            onClick={() => setScanning(false)}
+            onClick={() => {
+              setScanning(false);
+              scannerRef.current?.stop().then(() => scannerRef.current?.clear());
+            }}
             className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full text-sm z-10"
           >
             ✕
