@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { createBrowserClient } from '@/lib/supabase';
 import type { Recipe } from '@/lib/types';
