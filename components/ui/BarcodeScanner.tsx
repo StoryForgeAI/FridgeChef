@@ -1,6 +1,6 @@
 'use client';
 import { useState } from 'react';
-import BarcodeScanner from '@yudiel/react-barcode-scanner';
+import { Html5QrcodePlugin } from 'react-html5-qrcode';
 import { createBrowserClient } from '@/lib/supabase';
 import type { PantryItem } from '@/lib/types';
 
@@ -36,15 +36,14 @@ export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) =>
     <div>
       {scanning ? (
         <div className="relative">
-          <BarcodeScanner
-            onDetected={(codes) => {
-              if (codes?.[0]?.rawValue) handleScan(codes[0].rawValue);
-            }}
-            className="w-full h-64 bg-gray-100 rounded-lg"
+          <Html5QrcodePlugin
+            config={{ fps: 10, qrbox: { width: 250, height: 250 } }}
+            onScanSuccess={(decodedText: string) => handleScan(decodedText)}
+            onScanError={() => {}}
           />
           <button
             onClick={() => setScanning(false)}
-            className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full text-sm"
+            className="absolute top-2 right-2 bg-red-500 text-white w-8 h-8 rounded-full text-sm z-10"
           >
             ✕
           </button>
