@@ -3,11 +3,13 @@ import { useState, useRef, useEffect } from 'react';
 import { createBrowserClient } from '@/lib/supabase';
 import type { PantryItem } from '@/lib/types';
 
+type Html5QrcodeType = any;
+
 export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) => void }) {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState('');
-  const [Html5Qrcode, setHtml5Qrcode] = useState<any>(null);
-  const scannerRef = useRef<any>(null);
+  const [Html5Qrcode, setHtml5Qrcode] = useState<(() => Html5QrcodeType) | null>(null);
+  const scannerRef = useRef<Html5QrcodeType | null>(null);
   const supabase = createBrowserClient();
 
   useEffect(() => {
