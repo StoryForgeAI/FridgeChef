@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createBrowserClient } from '@/lib/supabase';
 import RecipeConfig from '@/components/recipe/RecipeConfig';
 import type { Recipe } from '@/lib/types';
@@ -9,6 +9,10 @@ export default function RecipeDiscoveryPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const supabase = createBrowserClient();
+
+  useEffect(() => {
+    // Component mounted
+  }, []);
 
   const handleGenerate = async (config: { servings: number; maxCalories: number | null; allergies: string[] }) => {
     const items = ingredients.split(',').map((i) => i.trim()).filter(Boolean);
