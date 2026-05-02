@@ -25,7 +25,7 @@ export default function RecipeDetailPage() {
       .order('created_at', { ascending: false })
       .limit(1)
       .single();
-    if (data?.recipe?.[id]) setRecipe(data.recipe[id]);
+    if (data?.recipe?.[parseInt(id as string)]) setRecipe(data.recipe[parseInt(id as string)]);
   };
 
   const playAudio = async () => {
