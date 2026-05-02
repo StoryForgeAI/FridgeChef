@@ -49,6 +49,7 @@ export interface Stats {
 }
 
 export const STRIPE_TIERS = {
+  free: { price: 0, credits: 0, tss_credits: 0, discount: 0, max_items: 5 },
   standard: { price: 2.99, credits: 250, tss_credits: 10, discount: 0.10, max_items: 10 },
   pro: { price: 9.99, credits: 3000, tss_credits: 80, discount: 0.25, max_items: 50 },
   chef: { price: 18.99, credits: 6500, tss_credits: 160, discount: 0.30, max_items: 100 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY } from '@/lib/config';
 import OpenAI from 'openai';
 import { STRIPE_TIERS } from '@/lib/types';
@@ -8,7 +8,15 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY! });
 
 export async function POST(req: NextRequest) {
   const supabase = createClient(NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, {
-    cookies: { get: (name) => req.cookies.get(name)?.value }
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+      storage: {
+        getItem: (key) => req.cookies.get(key)?.value || null,
+        setItem: () => {},
+        removeItem: () => {}
+      }
+    }
   });
 
   const { data: { user } } = await supabase.auth.getUser();

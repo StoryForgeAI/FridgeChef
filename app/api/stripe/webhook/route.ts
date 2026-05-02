@@ -4,6 +4,8 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { STRIPE_TIERS } from '@/lib/types';
 import { STRIPE_WEBHOOK_SECRET } from '@/lib/config';
 
+export const runtime = 'nodejs';
+
 export async function POST(req: NextRequest) {
   const body = await req.text();
   const signature = req.headers.get('stripe-signature');
