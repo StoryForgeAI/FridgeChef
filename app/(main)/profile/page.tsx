@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createBrowserClient } from '@/lib/supabase';
 import { STRIPE_TIERS } from '@/lib/types';
 import type { Profile } from '@/lib/types';
