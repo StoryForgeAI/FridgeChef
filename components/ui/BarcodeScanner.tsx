@@ -1,22 +1,26 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { Html5Qrcode } from 'html5-qrcode';
 import { createBrowserClient } from '@/lib/supabase';
 import type { PantryItem } from '@/lib/types';
 
 export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) => void }) {
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState('');
-  const scannerRef = useRef<Html5Qrcode | null>(null);
+  const [Html5Qrcode, setHtml5Qrcode] = useState<any>(null);
+  const scannerRef = useRef<any>(null);
   const supabase = createBrowserClient();
 
   useEffect(() => {
-    if (scanning && !scannerRef.current) {
+    import('html5-qrcode').then((mod) => setHtml5Qrcode(() => mod.Html5Qrcode));
+  }, []);
+
+  useEffect(() => {
+    if (scanning && Html5Qrcode && !scannerRef.current) {
       scannerRef.current = new Html5Qrcode('reader');
       scannerRef.current.start(
         { facingMode: 'environment' },
         { fps: 10, qrbox: { width: 250, height: 250 } },
-        (decodedText) => {
+        (decodedText: string) => {
           handleScan(decodedText);
           scannerRef.current?.stop();
         },
@@ -26,7 +30,7 @@ export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) =>
     return () => {
       scannerRef.current?.stop().then(() => scannerRef.current?.clear());
     };
-  }, [scanning]);
+  }, [scanning, Html5Qrcode]);
 
   const handleScan = async (barcode: string) => {
     if (!barcode) return;
