@@ -11,7 +11,9 @@ export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) =>
 
   useEffect(() => {
     if (scanning) {
+      let isMounted = true;
       import('html5-qrcode').then((mod) => {
+        if (!isMounted) return;
         const Html5Qrcode = mod.Html5Qrcode;
         scannerRef.current = new Html5Qrcode('reader');
         scannerRef.current.start(
@@ -23,12 +25,13 @@ export default function BarcodeScanner({ onAdd }: { onAdd: (item: PantryItem) =>
           () => {}
         );
       });
+      return () => {
+        isMounted = false;
+        if (scannerRef.current) {
+          scannerRef.current.stop().then(() => scannerRef.current?.clear());
+        }
+      };
     }
-    return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().then(() => scannerRef.current?.clear());
-      }
-    };
   }, [scanning]);
 
   const handleScan = async (barcode: string) => {
